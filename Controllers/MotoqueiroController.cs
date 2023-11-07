@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ava2Bim.Model;
+using ava2Bim.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ava2Bim.Controllers;
 
@@ -12,22 +14,46 @@ namespace ava2Bim.Controllers;
 
 public class MotoqueiroController : ControllerBase
 {
-    [HttpGet(Name = "motoqueiros")]
+    private readonly ILogger<MotoqueiroController> _logger;
+    private readonly ava2BimContext _context;
 
-    public List<Motoqueiro> GetMotoqueiros()
+    public MotoqueiroController(ILogger<MotoqueiroController> logger, ava2BimContext context)
     {
-        List<Motoqueiro> motoqueiros = new List<Motoqueiro>();
+        _logger = logger;
+        _context = context;
+    }
 
-        motoqueiros.Add(new Motoqueiro{
-            Nome = "Chico"
-        });
-                motoqueiros.Add(new Motoqueiro{
-            Nome = "João"
-        });
-                motoqueiros.Add(new Motoqueiro{
-            Nome = "Paulo"
-        });
-
+    [HttpGet]
+    public ActionResult<IEnumerable<Motoqueiro>> Get()
+    {
+        var motoqueiros = _context.Motoqueiros.ToList();
+        if(motoqueiros is null)
+            return NotFound();
+        
         return motoqueiros;
-    } 
+    }
+
+    [HttpPost]
+    public ActionResult Post(Motoqueiro motoqueiros)
+    {
+        _context.Motoqueiros.Add(motoqueiros);
+        _context.SaveChanges();
+
+        return new CreatedAtRouteResult("GetMotoqueiro",
+        new{id = motoqueiros.Id},
+        motoqueiros);
+    }
+
+    [HttpPut("{id:int}")]
+    public ActionResult Put(int id, Motoqueiro motoqueiros)
+    {
+        if(id != motoqueiros.Id)
+            return BadRequest();
+
+        _context.Entry(motoqueiros).State = EntityState.Modified;
+        _context.SaveChanges();
+
+        return Ok(motoqueiros);
+    }
+
 }
