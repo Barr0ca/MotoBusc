@@ -10,6 +10,6 @@ namespace ava2Bim.Context;
 public class ava2BimContext : DbContext
 {
     public ava2BimContext(DbContextOptions options) : base(options) {}
-    public DbSet<Empresa>? Alunos { get; set; }
-    public DbSet<Motoqueiro>? Cursos { get; set; }
+    public DbSet<Empresa>? Empresas { get; set; }
+    public DbSet<Motoqueiro>? Motoqueiros { get; set; }
 }
