@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ava2Bim.Model;
 using ava2Bim.Context;
 
-namespace apiUniversidade.Controllers
+namespace ava2Bim.Controllers
 {
     [ApiController]
     [Route("[controller]")]
