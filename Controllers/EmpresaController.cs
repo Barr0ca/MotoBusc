@@ -32,26 +32,26 @@ namespace apiUniversidade.Controllers
             return empresas;
         }
 
-        [HttpGet("{id:int}", Name = "GetCurso")]
+        [HttpGet("{id:int}", Name = "GetEmpresa")]
 
         public ActionResult<Empresa> Get(int id)
         {
             var empresas = _context.Empresas.FirstOrDefault(p => p.Id == id);
             if(empresas is null)
-                return NotFound("Curso não encontrado");
+                return NotFound("Empresa não encontrado");
                 
             return empresas;
         }
 
         [HttpPost]
 
-        public ActionResult Post(Empresa curso){
-            _context.Empresas.Add(curso);
+        public ActionResult Post(Empresa empresa){
+            _context.Empresas.Add(empresa);
             _context.SaveChanges();
 
             return new CreatedAtRouteResult("GetEmpresa",
-                new{ id = curso.Id},
-                curso);
+                new{ id = empresa.Id},
+                empresa);
         }
 
         [HttpPut("{id:int}")]
