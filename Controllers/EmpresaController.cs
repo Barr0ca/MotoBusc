@@ -4,73 +4,67 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ava2Bim.Model;
+using ava2Bim.Context;
 
-namespace ava2Bim.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-
-public class EmpresaController : ControllerBase
+namespace apiUniversidade.Controllers
 {
-    [HttpGet(Name = "empresas")]
-
-    public List<Empresa> GetEmpresas()
+    [ApiController]
+    [Route("[controller]")]
+    public class EmpresaController : ControllerBase
     {
-        List<Empresa> empresas = new List<Empresa>();
-        List<Motoqueiro> motoqueirosAquino = new List<Motoqueiro>();
-        List<Motoqueiro> motoqueirosRei = new List<Motoqueiro>();
-        List<Motoqueiro> motoqueirosQuiosque = new List<Motoqueiro>();
+        private readonly ILogger<EmpresaController> _Logger;
 
-        empresas.Add(new Empresa{
-            Nome = "Mototáxi da Praça Aquino",
-            Numero = "996559940",
-            Whatsapp = "996559940",
-            Rua = "Rua Aquino Batista",
-            Motoqueiros = motoqueirosAquino
-        });
-        empresas.Add(new Empresa{
-            Nome = "Mototáxi da Praça do Rei",
-            Numero = "998344412",
-            Whatsapp = "997780121",
-            Rua = "Rua João Pedrosa",
-            Motoqueiros = motoqueirosRei 
-        });
-        empresas.Add(new Empresa{
-            Nome = "Mototáxi do Quiosque",
-            Numero = "993341766",
-            Whatsapp = "998764432",
-            Rua = "Rua da Varanda",
-            Motoqueiros = motoqueirosQuiosque
-        });
+        private readonly ava2BimContext _context;
 
-        motoqueirosAquino.Add(new Motoqueiro{
-            Nome = "Pedro"
-        });
-        motoqueirosAquino.Add(new Motoqueiro{
-            Nome = "João"
-        });
-        motoqueirosAquino.Add(new Motoqueiro{
-            Nome = "Chico"
-        });
-        motoqueirosRei.Add(new Motoqueiro{
-            Nome = "Messi"
-        });
-        motoqueirosRei.Add(new Motoqueiro{
-            Nome = "Timótio"
-        });
-        motoqueirosRei.Add(new Motoqueiro{
-            Nome = "Zé Paulo"
-        });
-        motoqueirosQuiosque.Add(new Motoqueiro{
-            Nome = "Paulo"
-        });
-        motoqueirosQuiosque.Add(new Motoqueiro{
-            Nome = "Tonhão"
-        });
-        motoqueirosQuiosque.Add(new Motoqueiro{
-            Nome = "Franscisco"
-        });
+        public EmpresaController(ILogger<EmpresaController> logger, ava2BimContext context){
+            _Logger = logger;
+            _context = context;
+        }
+    
+        [HttpGet(Name = "empresas")]
 
-        return empresas;
+        public ActionResult<IEnumerable<Empresa>> Get()
+        {
+            var empresas = _context.Empresas.ToList();
+            if(empresas is null)
+                return NotFound();
+                
+            return empresas;
+        }
+
+        [HttpGet("{id:int}", Name = "GetCurso")]
+
+        public ActionResult<Empresa> Get(int id)
+        {
+            var empresas = _context.Empresas.FirstOrDefault(p => p.Id == id);
+            if(empresas is null)
+                return NotFound("Curso não encontrado");
+                
+            return empresas;
+        }
+
+        [HttpPost]
+
+        public ActionResult Post(Empresa curso){
+            _context.Empresas.Add(curso);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("GetEmpresa",
+                new{ id = curso.Id},
+                curso);
+        }
+
+        [HttpPut("{id:int}")]
+
+        public ActionResult Put(int id, Empresa empresa)
+        {
+            if(id != empresa.Id)
+                return BadRequest();
+                
+            _context.Entry(empresa).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.SaveChanges();
+
+            return Ok(empresa);
+        }
     }
 }
