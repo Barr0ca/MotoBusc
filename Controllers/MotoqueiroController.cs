@@ -23,7 +23,7 @@ public class MotoqueiroController : ControllerBase
         _context = context;
     }
 
-    [HttpGet]
+    [HttpGet(Name="GetMotoqueiro")]
     public ActionResult<IEnumerable<Motoqueiro>> Get()
     {
         var motoqueiros = _context.Motoqueiros.ToList();
@@ -39,9 +39,7 @@ public class MotoqueiroController : ControllerBase
         _context.Motoqueiros.Add(motoqueiros);
         _context.SaveChanges();
 
-        return new CreatedAtRouteResult("GetMotoqueiro",
-        new{id = motoqueiros.Id},
-        motoqueiros);
+        return Ok(motoqueiros);
     }
 
     [HttpPut("{id:int}")]
