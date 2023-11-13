@@ -33,16 +33,6 @@ public class MotoqueiroController : ControllerBase
         return motoqueiros;
     }
 
-    [HttpGet("{id:int}", Name = "Motoqueiro")]
-    public ActionResult<Motoqueiro> Get(int id)
-    {
-        var motoqueiro = _context.Motoqueiros.FirstOrDefault(p => p.Id == id);
-        if(motoqueiro is null)
-            return NotFound("Motoqueiro não encontrado");
-
-        return motoqueiro;
-    }
-
     [HttpPost]
     public ActionResult Post(Motoqueiro motoqueiros)
     {
