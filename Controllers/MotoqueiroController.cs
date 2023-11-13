@@ -54,4 +54,16 @@ public class MotoqueiroController : ControllerBase
         return Ok(motoqueiros);
     }
 
+    [HttpDelete("{id:int}")]
+    public ActionResult Delete(int id){
+        var motoqueiro = _context.Motoqueiros.FirstOrDefault(p => p.Id == id);
+
+        if(motoqueiro is null)
+            return NotFound();
+
+        _context.Motoqueiros.Remove(motoqueiro);
+        _context.SaveChanges();
+
+        return Ok(motoqueiro);
+    }
 }
