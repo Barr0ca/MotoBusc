@@ -66,5 +66,18 @@ namespace ava2Bim.Controllers
 
             return Ok(empresa);
         }
+
+        [HttpDelete("{id:int}")]
+        public ActionResult Delete(int id){
+            var empresa = _context.Empresas.FirstOrDefault(p => p.Id == id);
+
+            if(empresa is null)
+                return NotFound();
+            
+            _context.Empresas.Remove(empresa);
+            _context.SaveChanges();
+
+            return Ok(empresa);
+        }
     }
 }
