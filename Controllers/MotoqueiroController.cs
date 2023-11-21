@@ -14,10 +14,10 @@ namespace ava2Bim.Controllers;
 
 public class MotoqueiroController : ControllerBase
 {
-    private readonly ILogger<MotoqueiroController> _logger;
+    private readonly ILogger<Motoqueiro> _logger;
     private readonly ava2BimContext _context;
 
-    public MotoqueiroController(ILogger<MotoqueiroController> logger, ava2BimContext context)
+    public MotoqueiroController(ILogger<Motoqueiro> logger, ava2BimContext context)
     {
         _logger = logger;
         _context = context;

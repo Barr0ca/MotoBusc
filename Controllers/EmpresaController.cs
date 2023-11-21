@@ -12,11 +12,11 @@ namespace ava2Bim.Controllers
     [Route("[controller]")]
     public class EmpresaController : ControllerBase
     {
-        private readonly ILogger<EmpresaController> _Logger;
+        private readonly ILogger<Empresa> _Logger;
 
         private readonly ava2BimContext _context;
 
-        public EmpresaController(ILogger<EmpresaController> logger, ava2BimContext context){
+        public EmpresaController(ILogger<Empresa> logger, ava2BimContext context){
             _Logger = logger;
             _context = context;
         }
