@@ -11,10 +11,8 @@ namespace MotoBusc.Model
 
         public DateTime Data { get; set; }
 
-        public List<Usuario> Usuarios { get; set; }
+        public int Nota { get; set; }
 
-        public Avaliacao(){
-            Usuarios = new List<Usuario>();
-        }
+        public string? Usuario { get; set; }
     }
 }
