@@ -29,6 +29,40 @@ public class AutorizaController : ControllerBase
         _configuration = configuration;
     }
 
+    private UsuarioToken GeraToken(UsuarioDTO user)
+    {
+        var claims = new[]
+        {
+            new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.UniqueName, user.Email),
+            new Claim("MotoBusc", "Usuário"),
+            new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
+
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var expiracao = _configuration["TokenConfiguration:ExpireHours"];
+        var expiration = DateTime.UtcNow.AddHours(double.Parse(expiracao));
+
+        JwtSecurityToken token = new JwtSecurityToken
+        (
+            issuer: _configuration["TokenConfiguration:IssuerSigningKeyResolver"],
+            audience: _configuration["TokenConfiguration:Audience"],
+            claims: claims,
+            expires: expiration,
+            signingCredentials: credentials
+        );
+
+        return new UsuarioToken()
+        {
+            Authenticated = true,
+            Expiration = expiration,
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Message = "JWT Ok."
+        };
+    }
+
     [HttpGet]
     public ActionResult<string> Get()
     {
@@ -51,8 +85,8 @@ public class AutorizaController : ControllerBase
             return BadRequest(result.Errors);
     
         await _signInManager.SignInAsync(user, false);
-        // return Ok(GeraToken(model));
-        return Ok();
+        return Ok(GeraToken(model));
+
     }
 
     [HttpPost("login")]
@@ -67,40 +101,11 @@ public class AutorizaController : ControllerBase
         );
 
         if(result.Succeeded)
-            return Ok();
+            return Ok(GeraToken(user));
         else
         {
             ModelState.AddModelError(string.Empty, "Login Inválido...");
             return BadRequest(ModelState);
         }
     }
-    private UsuarioToken GeraToken(UsuarioDTO userInfo){
-            var claims = new[]{
-                new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.UniqueName, userInfo.Email),
-                new Claim("IFRN", "TecInfo"),
-                new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
-
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var expiracao = _configuration["TokenConfiguration:ExpireHours"];
-            var expiration = DateTime.UtcNow.AddHours(double.Parse(expiracao));
-
-            JwtSecurityToken token = new JwtSecurityToken(
-                issuer: _configuration["TokenConfiguration:IssuerSigningKeyResolver"],
-                audience: _configuration["TokenConfiguration:Audience"],
-                claims: claims,
-                expires: expiration,
-                signingCredentials: credentials
-            );
-
-            return new UsuarioToken(){
-                Authenticated = true,
-                Expiration = expiration,
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Message = "JWT Ok."
-            };
-        }
 }
