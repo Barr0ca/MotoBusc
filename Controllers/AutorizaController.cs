@@ -17,7 +17,7 @@ namespace MotoBusc.Controllers
 
         private readonly IConfiguration _configuration;
 
-        public AutorizaController(UserManager<IdentityUser> userManager),
+        public AutorizaController(UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
