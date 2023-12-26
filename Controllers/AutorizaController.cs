@@ -46,7 +46,7 @@ public class AutorizaController : ControllerBase
             EmailConfirmed = true
         };
 
-        var result = await _userManager.CreateAsync(user, model.Senha);
+        var result = await _userManager.CreateAsync(user, model.Password);
         if(!result.Succeeded)
             return BadRequest(result.Errors);
     
@@ -61,7 +61,7 @@ public class AutorizaController : ControllerBase
         var result = await _signInManager.PasswordSignInAsync
         (
             user.Email,
-            user.Senha,
+            user.Password,
             isPersistent: false,
             lockoutOnFailure: false
         );
