@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using MotoBusc.Model;
 using ava2Bim.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MotoBusc.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
     [Route("[controller]")]
     public class UsuarioController : ControllerBase

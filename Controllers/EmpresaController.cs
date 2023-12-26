@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ava2Bim.Model;
 using ava2Bim.Context;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ava2Bim.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
     [Route("[controller]")]
     public class EmpresaController : ControllerBase
