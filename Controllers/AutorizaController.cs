@@ -1,10 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
+using MotoBusc.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.IdentityModel.Tokens;
 namespace MotoBusc.Controllers
 {
     [ApiController]
@@ -17,20 +23,63 @@ namespace MotoBusc.Controllers
 
         private readonly IConfiguration _configuration;
 
-        public AutorizaController(UserManager<IdentityUser> userManager),
-        SignInManager<IdentityUser> signInManager, IConfiguration configuration)
-        {
-            _userManager = userManager;
+        public AutorizaController(UserManager<IdentityUser> userManeger, SignInManager<IdentityUser> signInManager, IConfiguration configuration){
+            _userManager = userManeger;
             _signInManager = signInManager;
             _configuration = configuration;
         }
 
         [HttpGet]
+        public ActionResult<string> Get(){
+            return "AutorizaController :: Acessado em : "
+                + DateTime.Now.ToLongTimeString();
+        }
 
-            public ActionResult<string> Get()
-            {
-                return "AutorizaController :: Acessado em : "
-                    + DateTime.Now.ToLongDateString();
-            }
+        [HttpPost("Register")]
+
+        public async Task<ActionResult> RegisterUser([FromBody] UsuarioDTO model){
+            var user = new IdentityUser{
+                UserName = model.Email,
+                Email = model.Email,
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if(!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _signInManager.SignInAsync(user, false);
+            return Ok(GeraToken(model));
+        }
+
+        private UsuarioToken GeraToken(UsuarioDTO userInfo){
+            var claims = new[]{
+                new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.UniqueName, userInfo.Email),
+                new Claim("IFRN", "TecInfo"),
+                new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
+
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var expiracao = _configuration["TokenConfiguration:ExpireHours"];
+            var expiration = DateTime.UtcNow.AddHours(double.Parse(expiracao));
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: _configuration["TokenConfiguration:IssuerSigningKeyResolver"],
+                audience: _configuration["TokenConfiguration:Audience"],
+                claims: claims,
+                expires: expiration,
+                signingCredentials: credentials
+            );
+
+            return new UsuarioToken(){
+                Authenticated = true,
+                Expiration = expiration,
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Message = "JWT Ok."
+            };
+        }
     }
 }

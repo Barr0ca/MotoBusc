@@ -9,8 +9,8 @@ namespace MotoBusc.DTO
     {
         public String? Email { get; set; }
 
-        public String? Senha { get; set; }
+        public String? Password { get; set; }
 
-        public String? ConfirmeSenha { get; set; }
+        public String? ConfirmPassword { get; set; }
     }
 }
