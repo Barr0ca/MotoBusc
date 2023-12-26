@@ -7,12 +7,12 @@ namespace MotoBusc.DTO
 {
     public class UsuarioToken
     {
-        public bool Autenticacao { get; set; }
+        public bool Authenticated { get; set; }
 
-        public DateTime Expiracao { get; set; }
+        public DateTime Expiration { get; set; }
 
         public String? Token { get; set; }
 
-        public String? Mensagem { get; set; }
+        public String? Message { get; set; }
     }
 }
