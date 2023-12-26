@@ -12,11 +12,11 @@ namespace ava2Bim.Controllers
     [Route("[controller]")]
     public class EmpresaController : ControllerBase
     {
-        private readonly ILogger<EmpresaController> _Logger;
+        private readonly ILogger<Empresa> _Logger;
 
         private readonly ava2BimContext _context;
 
-        public EmpresaController(ILogger<EmpresaController> logger, ava2BimContext context){
+        public EmpresaController(ILogger<Empresa> logger, ava2BimContext context){
             _Logger = logger;
             _context = context;
         }
@@ -62,6 +62,19 @@ namespace ava2Bim.Controllers
                 return BadRequest();
                 
             _context.Entry(empresa).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.SaveChanges();
+
+            return Ok(empresa);
+        }
+
+        [HttpDelete("{id:int}")]
+        public ActionResult Delete(int id){
+            var empresa = _context.Empresas.FirstOrDefault(p => p.Id == id);
+
+            if(empresa is null)
+                return NotFound();
+            
+            _context.Empresas.Remove(empresa);
             _context.SaveChanges();
 
             return Ok(empresa);

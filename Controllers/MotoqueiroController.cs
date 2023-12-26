@@ -14,16 +14,16 @@ namespace ava2Bim.Controllers;
 
 public class MotoqueiroController : ControllerBase
 {
-    private readonly ILogger<MotoqueiroController> _logger;
+    private readonly ILogger<Motoqueiro> _logger;
     private readonly ava2BimContext _context;
 
-    public MotoqueiroController(ILogger<MotoqueiroController> logger, ava2BimContext context)
+    public MotoqueiroController(ILogger<Motoqueiro> logger, ava2BimContext context)
     {
         _logger = logger;
         _context = context;
     }
 
-    [HttpGet]
+    [HttpGet(Name="GetMotoqueiro")]
     public ActionResult<IEnumerable<Motoqueiro>> Get()
     {
         var motoqueiros = _context.Motoqueiros.ToList();
@@ -33,15 +33,23 @@ public class MotoqueiroController : ControllerBase
         return motoqueiros;
     }
 
+    [HttpGet("{id:int}", Name = "Motoqueiro")]
+    public ActionResult<Motoqueiro> Get(int id)
+    {
+        var motoqueiro = _context.Motoqueiros.FirstOrDefault(p => p.Id == id);
+        if(motoqueiro is null)
+            return NotFound("Motoqueiro não encontrado");
+
+        return motoqueiro;
+    }
+
     [HttpPost]
     public ActionResult Post(Motoqueiro motoqueiros)
     {
         _context.Motoqueiros.Add(motoqueiros);
         _context.SaveChanges();
 
-        return new CreatedAtRouteResult("GetMotoqueiro",
-        new{id = motoqueiros.Id},
-        motoqueiros);
+        return Ok(motoqueiros);
     }
 
     [HttpPut("{id:int}")]
@@ -56,4 +64,16 @@ public class MotoqueiroController : ControllerBase
         return Ok(motoqueiros);
     }
 
+    [HttpDelete("{id:int}")]
+    public ActionResult Delete(int id){
+        var motoqueiro = _context.Motoqueiros.FirstOrDefault(p => p.Id == id);
+
+        if(motoqueiro is null)
+            return NotFound();
+
+        _context.Motoqueiros.Remove(motoqueiro);
+        _context.SaveChanges();
+
+        return Ok(motoqueiro);
+    }
 }
