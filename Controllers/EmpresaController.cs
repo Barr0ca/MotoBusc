@@ -12,7 +12,7 @@ namespace ava2Bim.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/{controller}/empresa")]
+    [Route("api/{v:controller}/empresa")]
     public class EmpresaController : ControllerBase
     {
         private readonly ILogger<Empresa> _Logger;
